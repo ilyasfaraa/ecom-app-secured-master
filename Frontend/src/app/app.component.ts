@@ -1,0 +1,35 @@
+import {Component, OnInit} from '@angular/core';
+import {KeycloakProfile} from "keycloak-js";
+import {KeycloakService} from "keycloak-angular";
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css',
+  standalone: false
+})
+export class AppComponent implements OnInit {
+  title = 'ecom-app-angular';
+  public profile!: KeycloakProfile;
+
+  constructor(public keycloakService: KeycloakService) {
+  }
+
+  ngOnInit() {
+    if (this.keycloakService.isLoggedIn()) {
+      this.keycloakService.loadUserProfile().then(profile => {
+        this.profile = profile;
+      });
+    }
+  }
+
+  async handleLogin() {
+    await this.keycloakService.login({
+      redirectUri: window.location.origin
+    });
+  }
+
+  handleLogout() {
+    this.keycloakService.logout(window.location.origin);
+  }
+}
